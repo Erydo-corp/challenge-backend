@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "challenge-backend"
+version = "0.1.0"
+description = ""
+authors = ["Mihail"]
+readme = "README.md"
+packages = [{include = "challenge_backend"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.99.1"
+alembic = "^1.11.1"
+uvicorn = {extras = ["standart"], version = "^0.22.0"}
+psycopg2 = "^2.9.6"
+asyncpg = "^0.27.0"
+envparse = "^0.2.0"
+fastapi-users = {extras = ["sqlalchemy"], version = "^12.0.0"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
