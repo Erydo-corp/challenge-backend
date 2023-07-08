@@ -1,7 +1,7 @@
 import uvicorn
 
 from fastapi import FastAPI, APIRouter
-from routers.user_routers import user_router
+from api.routers.user_routers import user_router
 
 app = FastAPI(title="Chellenge")
 

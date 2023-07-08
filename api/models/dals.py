@@ -1,4 +1,8 @@
+from typing import Union
+from uuid import UUID
+
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import update, and_, select
 
 from . import user
 
@@ -20,3 +24,13 @@ class UserCRUD:
         self.db_connection.add(new_user)
         await self.db_connection.flush()
         return new_user
+
+    async def delete_user(self, id: UUID) -> Union[UUID, None]:
+        query = update(user.User).\
+            where(and_(user.User.id, user.User.is_active == True)).\
+            values(is_active=False).\
+            returning(user.User.id)
+        result = await self.db_connection.execute(query)
+        delete_user = result.fetchone()
+        if delete_user is not None:
+            return delete_user[0]
