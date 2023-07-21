@@ -1,7 +1,9 @@
 import datetime
+import uuid
 
-from sqlalchemy.orm import declarative_base
-from sqlalchemy import Column, String, Boolean, Date
+import sqlalchemy
+from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy import Column, String, Boolean, Date, Integer, ForeignKey, UUID, DateTime
 from fastapi_users.db import SQLAlchemyBaseUserTableUUID
 
 Base = declarative_base()
@@ -16,4 +18,17 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
 
     create_at = Column(Date, default=datetime.datetime.now())
     update_at = Column(Date)
+    status = Column(Boolean, default=True, comment="Удален пользователь или нет")
+
+
+class AccessToken(Base):
+    __tablename__ = 'access_token'
+
+    id = Column(Integer, primary_key=True)
+    token = Column(UUID(as_uuid=False), unique=True, index=True, default=uuid.uuid4)
+    expires = Column(DateTime, default=datetime.datetime.now)
+    user_id = Column(UUID, ForeignKey("user.id"))
+
+    user = relationship("User")
+
 

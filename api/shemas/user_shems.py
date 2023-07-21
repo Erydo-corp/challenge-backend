@@ -1,11 +1,13 @@
 import re
 import uuid
+from typing import Optional
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, UUID4
 from fastapi_users import schemas
+from pydantic.fields import Field
 from pydantic.networks import EmailStr
 from fastapi import HTTPException
-
+from pydantic.schema import datetime
 
 LETTER_MATCH_USER = re.compile(r"^[a-zA-ZА-Яа-я\-]+$")
 
@@ -17,14 +19,6 @@ class TrendsModel(BaseModel):
 
 class UserBase(schemas.BaseUser[uuid.UUID]):
     pass
-
-
-class User(UserBase):
-    id: uuid.UUID
-    name: str
-    surname: str
-    email: EmailStr
-    second_name: str
 
 
 class UserCreate(schemas.BaseUserCreate):
@@ -42,4 +36,23 @@ class UserCreate(schemas.BaseUserCreate):
         return value
 
 
+class TokenBase(BaseModel):
+    token: UUID4 = Field(..., alias="access_token")
+    expires: datetime
+    token_type: Optional[str] = "bearer"
 
+    class Config:
+        allow_population_by_field_name = True
+
+    @validator("token")
+    def hexlify_token(cls, value):
+        return value.hex
+
+
+class User(UserBase):
+    id: uuid.UUID
+    name: str
+    surname: str
+    email: EmailStr
+    second_name: str
+    token: TokenBase = {}

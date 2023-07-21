@@ -1,9 +1,19 @@
 import uvicorn
 
 from fastapi import FastAPI, APIRouter
+from fastapi.middleware.cors import CORSMiddleware
+
 from api.routers.user_routers import user_router
 
-app = FastAPI(title="Chellenge")
+app = FastAPI(title="Challenge")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 app_router = APIRouter()
 
@@ -14,6 +24,7 @@ def index():
 
 
 app_router.include_router(user_router, prefix="/user", tags=['User'])
+
 
 app.include_router(app_router)
 

@@ -13,26 +13,14 @@ async def _create_user(body: user_shems.UserCreate, db) -> user_shems.User:
     async with db as session:
         async with session.begin():
             model_user = UserCRUD(session)
-            user = await model_user.create_user(
-                name=body.name,
-                second_name=body.second_name,
-                password=body.password,
-                surname=body.surname,
-                email=body.email
-            )
-        return user_shems.User(
-            id=user.id,
-            name=user.name,
-            second_name=user.second_name,
-            surname=user.surname,
-            email=user.email
-        )
+            user = await model_user.create_user(body)
+        return user
 
 
 async def _delete_user(id, db) -> Union[user_shems.User]:
     pass
 
 
-@user_router.post("/", response_model=user_shems.User)
-async def create_user(body: user_shems.UserCreate, db: AsyncSession = Depends(get_db)) -> user_shems.User:
+@user_router.post("/")
+async def create_user(body: user_shems.UserCreate, db: AsyncSession = Depends(get_db)):
     return await _create_user(body, db)
