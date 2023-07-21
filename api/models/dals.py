@@ -44,6 +44,7 @@ class UserCRUD:
         )
         self.db_connection.add(new_user)
         token = user.AccessToken(user_id=new_user.id)
+        self.db_connection.add(token)
         await self.db_connection.flush()
         return token
 
