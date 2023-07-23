@@ -1,6 +1,6 @@
 import re
 import uuid
-from typing import Optional
+from typing import Optional, Any
 
 from pydantic import BaseModel, validator, UUID4
 from fastapi_users import schemas
@@ -56,3 +56,7 @@ class User(UserBase):
     email: EmailStr
     second_name: str
     token: TokenBase = {}
+
+
+class UserEmail(BaseModel):
+    email: EmailStr
