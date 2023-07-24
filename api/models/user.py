@@ -1,34 +1,31 @@
 import datetime
-import uuid
 
-import sqlalchemy
+from fastapi import Depends
 from sqlalchemy.orm import declarative_base, relationship
-from sqlalchemy import Column, String, Boolean, Date, Integer, ForeignKey, UUID, DateTime
-from fastapi_users.db import SQLAlchemyBaseUserTableUUID
+from sqlalchemy import Column, String, Boolean, TIMESTAMP, Integer, ForeignKey, UUID, DateTime
+from fastapi_users.db import SQLAlchemyBaseUserTableUUID, SQLAlchemyUserDatabase
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from api.config.config_db import get_db
 
 Base = declarative_base()
 
 
+async def get_user_db(session: AsyncSession = Depends(get_db)):
+    yield SQLAlchemyUserDatabase(session, User)
+
+
 class User(SQLAlchemyBaseUserTableUUID, Base):
     __tablename__ = "user"
-
+    username = Column(String, unique=True, index=True)
     name = Column(String, nullable=False)
     surname = Column(String, nullable=False)
     second_name = Column(String, nullable=False)
 
-    create_at = Column(Date, default=datetime.datetime.now())
-    update_at = Column(Date)
+    create_at = Column(TIMESTAMP, default=datetime.datetime.now())
+    update_at = Column(TIMESTAMP)
     status = Column(Boolean, default=True, comment="Удален пользователь или нет")
 
 
-class AccessToken(Base):
-    __tablename__ = 'access_token'
-
-    id = Column(Integer, primary_key=True)
-    token = Column(UUID(as_uuid=False), unique=True, index=True, default=uuid.uuid4)
-    expires = Column(DateTime, default=datetime.datetime.now)
-    user_id = Column(UUID, ForeignKey("user.id"))
-
-    user = relationship("User")
 
 
